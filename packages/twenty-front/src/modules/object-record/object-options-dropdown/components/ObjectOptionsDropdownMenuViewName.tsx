@@ -9,6 +9,7 @@ import { useAtomComponentStateValue } from '@/ui/utilities/state/jotai/hooks/use
 import { useSetAtomComponentState } from '@/ui/utilities/state/jotai/hooks/useSetAtomComponentState';
 import { type View } from '@/views/types/View';
 import { useUpdateViewFromCurrentState } from '@/views/view-picker/hooks/useUpdateViewFromCurrentState';
+import { viewPickerInputNameComponentState } from '@/views/view-picker/states/viewPickerInputNameComponentState';
 import { viewPickerIsDirtyComponentState } from '@/views/view-picker/states/viewPickerIsDirtyComponentState';
 import { viewPickerIsPersistingComponentState } from '@/views/view-picker/states/viewPickerIsPersistingComponentState';
 import { viewPickerSelectedIconComponentState } from '@/views/view-picker/states/viewPickerSelectedIconComponentState';
@@ -74,6 +75,10 @@ export const ObjectOptionsDropdownMenuViewName = ({
   const { setAndPersistViewName, setAndPersistViewIcon } =
     useUpdateObjectViewOptions();
 
+  const setViewPickerInputName = useSetAtomComponentState(
+    viewPickerInputNameComponentState,
+  );
+
   const { updateViewFromCurrentState } = useUpdateViewFromCurrentState();
   const [viewName, setViewName] = useState(currentView?.name);
 
@@ -102,6 +107,10 @@ export const ObjectOptionsDropdownMenuViewName = ({
   const handleViewNameChange = useDebouncedCallback((value: string) => {
     setAndPersistViewName(value, currentView);
   }, 500);
+
+  useEffect(() => {
+    setViewPickerInputName(currentView.name);
+  }, [currentView.name, setViewPickerInputName]);
 
   useEffect(() => {
     setViewPickerSelectedIcon(currentView.icon);
@@ -139,6 +148,7 @@ export const ObjectOptionsDropdownMenuViewName = ({
               value={viewName}
               onChange={(value) => {
                 setViewName(value);
+                setViewPickerInputName(value);
                 handleViewNameChange(value);
               }}
               autoGrow={false}
